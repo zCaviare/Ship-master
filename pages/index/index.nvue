@@ -127,9 +127,6 @@
       }
       this.init();
       this.getLocation();
-      setInterval(() => {
-        this.getFlow();
-      }, 3000);
       /* let data = data1.test.data2.split("\n");
       for (let n = 1; n < data.length; n++) {
       	let a = data[n].split(",");
@@ -151,6 +148,9 @@
           success: function(e) {
             that.ip = e[0].ip;
             that.port = e[0].port;
+            setInterval(() => {
+              that.getFlow();
+            }, 3000);
           },
           fail: function(e) {
             plus.nativeUI.alert('查询SQL语句失败: ' + JSON.stringify(e));
