@@ -71,7 +71,7 @@
             },
             "splashscreen" : {
                 "iosStyle" : "common",
-                "androidStyle" : "default",
+                "androidStyle" : "common",
                 "android" : {
                     "hdpi" : "static/start.png",
                     "xhdpi" : "static/start1.png",
