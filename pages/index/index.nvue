@@ -53,20 +53,10 @@
 <script>
   // import data1 from "@/common/data.js";
   import {
-    showToast
+    showToast,postHex,PrefixZero,hexToDec,formatExactValue
   } from "../../lib/serial.js"
-  import {
-    PrefixZero
-  } from "../../lib/serial.js"
-  import {
-    hexToDec
-  } from "../../lib/serial.js"
-  import {
-    formatExactValue
-  } from "../../lib/serial.js"
-  import {
-    postHex
-  } from "../../lib/serial.js"
+  
+  
   import Big from 'big.js'
   let serverIp = "60.174.238.227"; //60.174.238.227  192.168.31.205 192.168.0.7
   let port = 5001; //5001 1026 26
@@ -88,8 +78,13 @@
 
   var UP_ARROW = 38;
   var DOWN_ARROW = 40;
+  
+  var Socket = plus.android.importClass("java.net.Socket");
 
   module.exports = {
+	  globalData: {
+		  socket:new Socket("60.166.53.42", 8050)
+	  },
     data() {
       return {
         color: "#007AFF",
@@ -112,7 +107,8 @@
       }
     },
     onReady() {
-      this.map = uni.createMapContext("hfgToChMap", this);
+		
+        this.map = uni.createMapContext("hfgToChMap", this);
     },
     onLoad() {
       let lat = 0;
@@ -129,7 +125,7 @@
       this.getLocation();
       setInterval(() => {
         this.getFlow();
-      }, 3000);
+      }, 5000);
       /* let data = data1.test.data2.split("\n");
       for (let n = 1; n < data.length; n++) {
       	let a = data[n].split(",");
@@ -211,6 +207,7 @@
       },
       //打开配置框
       openPopup() {
+		  console.log("kkkkkkkkkkkkkkkk");
         this.$refs.popup.open();
       },
       closePopup() {
@@ -236,11 +233,11 @@
         var _all;
         let curr;
         var _curr;
+		console.log("进入getflow........")
         all = postHex(allHexReq, that.ip, that.port).toString().toUpperCase();
         console.log(all);
 
         if (all != -1) {
-
           _all = that.decodeAndUpdate(all); //for test
           that.flow_all = Number(_all).toFixed(1);
         }
