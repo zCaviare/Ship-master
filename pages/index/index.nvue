@@ -58,8 +58,8 @@
   
   
   import Big from 'big.js'
-  let serverIp = "60.174.238.227"; //60.174.238.227  192.168.31.205 192.168.0.7
-  let port = 5001; //5001 1026 26
+  // let serverIp = "60.174.238.227"; //60.174.238.227  192.168.31.205 192.168.0.7
+  // let port = 5001; //5001 1026 26
   var currHexReq = [0x01, 0x04, 0x00, 0x01, 0x00, 0x02, 0x20, 0x0B]; //实时流量查询
   var allHexReq = [0x01, 0x04, 0x00, 0x04, 0x00, 0x04, -80, 0x08]; //总量查询
   var translate = [
@@ -80,10 +80,11 @@
   var DOWN_ARROW = 40;
   
   var Socket = plus.android.importClass("java.net.Socket");
+  var inetSocketAddress = plus.android.importClass("java.net.InetSocketAddress");
 
   module.exports = {
 	  globalData: {
-		  socket:new Socket("60.166.53.42", 8050)
+	      socket:null,
 	  },
     data() {
       return {
@@ -100,14 +101,14 @@
             longitude: 117.384754
           }]
         }],
-        ip: "192.168.0.7",
-        port: "26",
+        ip: "60.166.53.42",
+        port: 8050,           
         cipher: "",
         show: true,
+		socket:null,
       }
     },
     onReady() {
-		
         this.map = uni.createMapContext("hfgToChMap", this);
     },
     onLoad() {
@@ -122,10 +123,11 @@
         })
       }
       this.init();
+	  // if (this.pingServer(this.))
+	  setInterval(() => {
+	    this.getFlow();
+	  }, 5000);
       this.getLocation();
-      setInterval(() => {
-        this.getFlow();
-      }, 5000);
       /* let data = data1.test.data2.split("\n");
       for (let n = 1; n < data.length; n++) {
       	let a = data[n].split(",");
@@ -139,7 +141,7 @@
       } */
     },
     methods: {
-      init() {
+     async init() {
         let that = this;
         plus.sqlite.openDatabase({
           name: 'first',
@@ -152,7 +154,7 @@
               success: function(e) {
                 plus.sqlite.executeSql({
                   name: 'first',
-                  sql: "insert into ip_port values(1,'192.168.0.7',23)",
+                  sql: "insert into ip_port values(1,'"+that.ip+"',"+ that.port+")",
                   success: function(e) {
                     console.log('创建表ip_port和插入数据成功');
                     plus.sqlite.selectSql({
@@ -192,7 +194,7 @@
             console.log('打开数据库ship.db失败');
           }
         });
-        
+		
       },
       changePopup(e) {
         if (!e.show) {
@@ -227,26 +229,31 @@
         });
       },
       //每隔6稍获得流量
-      getFlow() {
+       getFlow() {
         let that = this;
         let all;
         var _all;
         let curr;
         var _curr;
-		console.log("进入getflow........")
-        all = postHex(allHexReq, that.ip, that.port).toString().toUpperCase();
-        console.log(all);
+		console.log("进入getflow........,,ip value is:"+ that.ip )
+        all = postHex(allHexReq,that.ip,that.port).toString().toUpperCase();
+        console.log("xxxxxxxxxxxxxx:"+all);
 
-        if (all != -1) {
+        if (all != -1 && all != 0) {
           _all = that.decodeAndUpdate(all); //for test
+		  console.log("yyyyyyyyyyyyyyy:"+_all);
           that.flow_all = Number(_all).toFixed(1);
         }
-        curr = postHex(currHexReq, that.serverIp, that.port).toString().toUpperCase();
-        if (curr != -1) {
-          console.log(curr);
+		
+        curr = postHex(currHexReq,that.ip,that.port).toString().toUpperCase();
+        if (curr != -1 && curr != 0) {
           _curr = that.decodeAndUpdate(curr);
+		  console.log("zzzzzzzzzzzzzzzzz:"+_curr);
           that.curr_flow = Number(_curr).toFixed(2);
         }
+		// setTimeout(() => {
+		//   this.getFlow();
+		// }, 2000);
       },
 
       //每隔10秒获取当前经纬度
