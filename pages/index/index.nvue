@@ -164,7 +164,7 @@
 		methods: {
 			submitDate(longitude, latitude, curr_flow, flow_all, speed, shipname) {
 				uni.request({
-					url: 'http://192.168.20.83:8089/savelog', //仅为示例，并非真实接口地址。
+					url: 'http://lbw.0551sj.com:8089/savelog', //仅为示例，并非真实接口地址。
 					method: "POST",
 					data: {
 						longitude: longitude,
